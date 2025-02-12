@@ -73,6 +73,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void resetState() {
+    setState(() {
+      _counter = 0;
+      _isPopped = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,6 +143,10 @@ class _MyHomePageState extends State<MyHomePage> {
             tooltip: 'Pop 🤯',
             child: const Icon(Icons.delete),
           ),
+          FloatingActionButton(
+              onPressed: resetState,
+              tooltip: 'Reset',
+              child: const Icon(Icons.refresh)),
         ],
       ),
     );
