@@ -84,14 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            !_isPopped
+            _counter < 20 && !_isPopped
                 ? const Text(
                     'Inflate the ballon! (or deflate if you\'re evil)',
                   )
                 : const Text(
                     'NOOO YOU POPPED THE BALLOON!',
                   ),
-            !_isPopped
+            _counter < 20 && !_isPopped
                 ? Text(
                     '🎈',
                     style: TextStyle(fontSize: _counter * 10.0),
