@@ -57,9 +57,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _decrementCounter() {
-    setState(() {
-      _counter--;
-    });
+    if (_counter > 0) {
+      setState(() {
+        _counter--;
+      });
+    }
   }
 
   Color _appBarColor = Colors.deepPurple;
