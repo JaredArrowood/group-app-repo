@@ -36,6 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isPopped = false;
   late ConfettiController _confettiController;
 
+  String _balloonIcon = '🎈'; // Default balloon icon
+
   List<Color> colors = [
     Colors.red,
     Colors.blue,
@@ -58,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _confettiController =
-        ConfettiController(duration: const Duration(microseconds: 200));
+        ConfettiController(duration: const Duration(milliseconds: 700));
   }
 
   @override
@@ -114,6 +116,23 @@ class _MyHomePageState extends State<MyHomePage> {
     _confettiController.stop();
   }
 
+  /// Navigate to the Balloon Selection Page and update the balloon icon
+  void _navigateToBalloonSelection() async {
+    final selectedBalloon = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            BalloonSelectionPage(currentBalloon: _balloonIcon),
+      ),
+    );
+
+    if (selectedBalloon != null) {
+      setState(() {
+        _balloonIcon = selectedBalloon;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,16 +146,22 @@ class _MyHomePageState extends State<MyHomePage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Image.asset(
+                'assets/doggie.png',
+                width: 200,
+                height: 150,
+                fit: BoxFit.contain,
+              ),
               _counter < 20 && !_isPopped
                   ? const Text(
-                      'Inflate the balloon! (or deflate if you\'re evil)',
+                      'Inflate my balloon! (or deflate if you\'re evil)',
                     )
                   : const Text(
-                      'NOOO YOU POPPED THE BALLOON!',
+                      'NOOO YOU POPPED MY BALLOON!',
                     ),
               _counter < 20 && !_isPopped
                   ? Text(
-                      '🎈',
+                      _balloonIcon, 
                       style: TextStyle(fontSize: _counter * 10.0),
                     )
                   : const Text(
@@ -151,7 +176,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       _setAppBarColor();
                     }),
                     child: const Text("Change the bar color."),
-                  )
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: _navigateToBalloonSelection,
+                    child: const Text("Choose Balloon 🎈"),
+                  ),
                 ],
               ),
             ],
@@ -192,6 +222,38 @@ class _MyHomePageState extends State<MyHomePage> {
             child: const Icon(Icons.refresh),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Balloon Picker Page
+class BalloonSelectionPage extends StatelessWidget {
+  final String currentBalloon;
+
+  const BalloonSelectionPage({super.key, required this.currentBalloon});
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> balloons = ['🎈', '🎃', '🎁', '⚽', '💡', '🍎'];
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Select a Balloon")),
+      body: ListView(
+        children: balloons.map((balloon) {
+          return ListTile(
+            title: Text(
+              balloon,
+              style: const TextStyle(fontSize: 40),
+            ),
+            trailing: currentBalloon == balloon
+                ? const Icon(Icons.check, color: Colors.green)
+                : null,
+            onTap: () {
+              Navigator.pop(context, balloon); 
+            },
+          );
+        }).toList(),
       ),
     );
   }
