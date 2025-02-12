@@ -96,6 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _popBalloon() {
+    if (_counter < 1) return;
+
     if (!_isPopped) {
       setState(() {
         _isPopped = true;
