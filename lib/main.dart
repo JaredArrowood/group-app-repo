@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _confettiController =
-        ConfettiController(duration: const Duration(seconds: 2));
+        ConfettiController(duration: const Duration(microseconds: 200));
   }
 
   @override
@@ -68,9 +68,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+    if (_counter < 20) {
+      setState(() {
+        _counter++;
+      });
+    }
+
+    if (_counter >= 20 && !_isPopped) {
+      _popBalloon();
+    }
   }
 
   void _decrementCounter() {
@@ -90,18 +96,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _popBalloon() {
-    setState(() {
-      _isPopped = true;
-      _confettiController.play();
-    });
+    if (!_isPopped) {
+      setState(() {
+        _isPopped = true;
+        _confettiController.play();
+      });
+    }
   }
 
   void resetState() {
     setState(() {
       _counter = 0;
       _isPopped = false;
-      _confettiController.stop();
     });
+    _confettiController.stop();
   }
 
   @override
