@@ -34,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool _isPopped = false;
+  late ConfettiController _confettiController;
 
   List<Color> colors = [
     Colors.red,
@@ -52,6 +53,19 @@ class _MyHomePageState extends State<MyHomePage> {
     Colors.grey,
     Colors.blueGrey
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 2));
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -75,10 +89,18 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _popBalloon() {
+    setState(() {
+      _isPopped = true;
+      _confettiController.play();
+    });
+  }
+
   void resetState() {
     setState(() {
       _counter = 0;
       _isPopped = false;
+      _confettiController.stop();
     });
   }
 
@@ -89,39 +111,52 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: _appBarColor,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _counter < 20 && !_isPopped
-                ? const Text(
-                    'Inflate the ballon! (or deflate if you\'re evil)',
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              _counter < 20 && !_isPopped
+                  ? const Text(
+                      'Inflate the balloon! (or deflate if you\'re evil)',
+                    )
+                  : const Text(
+                      'NOOO YOU POPPED THE BALLOON!',
+                    ),
+              _counter < 20 && !_isPopped
+                  ? Text(
+                      '🎈',
+                      style: TextStyle(fontSize: _counter * 10.0),
+                    )
+                  : const Text(
+                      '💥',
+                      style: TextStyle(fontSize: 100.0),
+                    ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => setState(() {
+                      _setAppBarColor();
+                    }),
+                    child: const Text("Change the bar color."),
                   )
-                : const Text(
-                    'NOOO YOU POPPED THE BALLOON!',
-                  ),
-            _counter < 20 && !_isPopped
-                ? Text(
-                    '🎈',
-                    style: TextStyle(fontSize: _counter * 10.0),
-                  )
-                : const Text(
-                    '💥',
-                    style: TextStyle(fontSize: 100.0),
-                  ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => setState(() {
-                    _setAppBarColor();
-                  }),
-                  child: Text("Change the bar color."),
-                )
-              ],
-            ),
-          ],
-        ),
+                ],
+              ),
+            ],
+          ),
+          ConfettiWidget(
+            confettiController: _confettiController,
+            blastDirectionality: BlastDirectionality.explosive,
+            numberOfParticles: 50,
+            gravity: 0.15,
+            emissionFrequency: 0.05,
+            colors: [
+              Colors.black,
+            ],
+          ),
+        ],
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -137,18 +172,15 @@ class _MyHomePageState extends State<MyHomePage> {
             child: const Icon(Icons.remove),
           ),
           FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                _isPopped = true;
-              });
-            },
+            onPressed: _popBalloon,
             tooltip: 'Pop 🤯',
             child: const Icon(Icons.delete),
           ),
           FloatingActionButton(
-              onPressed: resetState,
-              tooltip: 'Reset',
-              child: const Icon(Icons.refresh)),
+            onPressed: resetState,
+            tooltip: 'Reset',
+            child: const Icon(Icons.refresh),
+          ),
         ],
       ),
     );
