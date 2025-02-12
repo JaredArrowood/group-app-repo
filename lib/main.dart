@@ -31,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  bool _isPopped = false;
 
   List<Color> colors = [
     Colors.red,
@@ -83,13 +84,22 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            !_isPopped
+                ? const Text(
+                    'Inflate the ballon! (or deflate if you\'re evil)',
+                  )
+                : const Text(
+                    'NOOO YOU POPPED THE BALLOON!',
+                  ),
+            !_isPopped
+                ? Text(
+                    '🎈',
+                    style: TextStyle(fontSize: _counter * 10.0),
+                  )
+                : const Text(
+                    '💥',
+                    style: TextStyle(fontSize: 100.0),
+                  ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -109,13 +119,22 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           FloatingActionButton(
             onPressed: _incrementCounter,
-            tooltip: 'Increment',
+            tooltip: 'Inflate 🌬️',
             child: const Icon(Icons.add),
           ),
           FloatingActionButton(
             onPressed: _decrementCounter,
-            tooltip: 'Decrement',
+            tooltip: 'Deflate 😔',
             child: const Icon(Icons.remove),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                _isPopped = true;
+              });
+            },
+            tooltip: 'Pop 🤯',
+            child: const Icon(Icons.delete),
           ),
         ],
       ),
