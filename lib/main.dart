@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:confetti/confetti.dart';
 
 void main() {
   runApp(const MyApp());
