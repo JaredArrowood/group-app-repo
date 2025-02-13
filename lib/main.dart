@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool _isPopped = false;
   late ConfettiController _confettiController;
-  String _balloonIcon = '🎈'; // Default balloon icon
+  String _balloonIcon = '🎈';
 
   List<Color> colors = [
     Colors.red,
@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _confettiController =
-        ConfettiController(duration: const Duration(milliseconds: 700));
+        ConfettiController(duration: const Duration(milliseconds: 20));
   }
 
   @override
@@ -233,13 +233,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
           ConfettiWidget(
-            confettiController: _confettiController,
-            blastDirectionality: BlastDirectionality.explosive,
-            numberOfParticles: 50,
-            gravity: 0.15,
-            emissionFrequency: 0.05,
-            colors: [Colors.black],
-          ),
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              numberOfParticles: 50,
+              gravity: 0.15,
+              emissionFrequency: 0.05,
+              colors: [Colors.black]),
         ],
       ),
       floatingActionButton: Row(
@@ -271,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// 🎈 Balloon Picker Page
+// Balloon Picker Page
 class BalloonSelectionPage extends StatelessWidget {
   final String currentBalloon;
 
