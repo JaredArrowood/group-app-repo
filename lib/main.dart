@@ -1,31 +1,70 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:confetti/confetti.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'settings.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemePreference();
+  }
+
+  void _loadThemePreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('darkMode') ?? false;
+    });
+  }
+
+  void _toggleTheme(bool isDark) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = isDark;
+    });
+    await prefs.setBool('darkMode', isDark);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'App 4',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      debugShowCheckedModeBanner: false,
+      theme: _isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      home: MyHomePage(
+        title: '🤡',
+        isDarkMode: _isDarkMode,
+        toggleTheme: _toggleTheme,
       ),
-      home: const MyHomePage(title: '🤡'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
   final String title;
+  final bool isDarkMode;
+  final Function(bool) toggleTheme;
+
+  const MyHomePage({
+    super.key,
+    required this.title,
+    required this.isDarkMode,
+    required this.toggleTheme,
+  });
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -35,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   bool _isPopped = false;
   late ConfettiController _confettiController;
-
   String _balloonIcon = '🎈'; // Default balloon icon
 
   List<Color> colors = [
@@ -75,7 +113,6 @@ class _MyHomePageState extends State<MyHomePage> {
         _counter++;
       });
     }
-
     if (_counter >= 20 && !_isPopped) {
       _popBalloon();
     }
@@ -99,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _popBalloon() {
     if (_counter < 1) return;
-
     if (!_isPopped) {
       setState(() {
         _isPopped = true;
@@ -116,7 +152,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _confettiController.stop();
   }
 
-  /// Navigate to the Balloon Selection Page and update the balloon icon
   void _navigateToBalloonSelection() async {
     final selectedBalloon = await Navigator.push(
       context,
@@ -139,6 +174,22 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: _appBarColor,
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingsPage(
+                    isDarkMode: widget.isDarkMode,
+                    toggleTheme: widget.toggleTheme,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Stack(
         alignment: Alignment.center,
@@ -154,14 +205,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               _counter < 20 && !_isPopped
                   ? const Text(
-                      'Inflate my balloon! (or deflate if you\'re evil)',
-                    )
-                  : const Text(
-                      'NOOO YOU POPPED MY BALLOON!',
-                    ),
+                      'Inflate my balloon! (or deflate if you\'re evil)')
+                  : const Text('NOOO YOU POPPED MY BALLOON!'),
               _counter < 20 && !_isPopped
                   ? Text(
-                      _balloonIcon, 
+                      _balloonIcon,
                       style: TextStyle(fontSize: _counter * 10.0),
                     )
                   : const Text(
@@ -172,9 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () => setState(() {
-                      _setAppBarColor();
-                    }),
+                    onPressed: _setAppBarColor,
                     child: const Text("Change the bar color."),
                   ),
                   const SizedBox(width: 10),
@@ -192,9 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
             numberOfParticles: 50,
             gravity: 0.15,
             emissionFrequency: 0.05,
-            colors: [
-              Colors.black,
-            ],
+            colors: [Colors.black],
           ),
         ],
       ),
@@ -227,7 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// Balloon Picker Page
+// 🎈 Balloon Picker Page
 class BalloonSelectionPage extends StatelessWidget {
   final String currentBalloon;
 
@@ -250,7 +294,7 @@ class BalloonSelectionPage extends StatelessWidget {
                 ? const Icon(Icons.check, color: Colors.green)
                 : null,
             onTap: () {
-              Navigator.pop(context, balloon); 
+              Navigator.pop(context, balloon);
             },
           );
         }).toList(),
